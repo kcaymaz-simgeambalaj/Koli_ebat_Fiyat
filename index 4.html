@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>K_Ebat_Fiyat_App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f4; }
+    input, select, button { padding: 8px; margin: 8px 0; width: 100%; max-width: 400px; }
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .result { margin-top: 20px; padding: 15px; background: #e0ffe0; border: 1px solid #a0d0a0; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>K_Ebat_Fiyat_App</h2>
+
+    <label for="x">X:</label>
+    <input type="number" id="x" step="0.01">
+
+    <label for="y">Y:</label>
+    <input type="number" id="y" step="0.01">
+
+    <label for="z">Z:</label>
+    <input type="number" id="z" step="0.01">
+
+    <label for="kalite">Kalite Seç:</label>
+    <select id="kalite"></select>
+
+    <label for="kar">Kâr Yüzdesi (%):</label>
+    <input type="number" id="kar" step="0.1">
+
+    <button onclick="hesapla()">Hesapla</button>
+
+    <div id="sonuc" class="result" style="display:none;"></div>
+  </div>
+
+  <script>
+    const kaliteListesi = JSON.parse(`[
+  {
+    "kalite": "T/S/S/S/S",
+    "fiyat": 14.6
+  },
+  {
+    "kalite": "T/S/S/S/T",
+    "fiyat": 14.7
+  },
+  {
+    "kalite": "B/S/S/ST",
+    "fiyat": 16.62
+  },
+  {
+    "kalite": "B/S/S/S/T 2S*125 GR",
+    "fiyat": 19.76
+  },
+  {
+    "kalite": "B/S/S/S/K",
+    "fiyat": 21.56
+  },
+  {
+    "kalite": "B/S/S/S/MK",
+    "fiyat": 17.97
+  },
+  {
+    "kalite": "K/S/S/S/T",
+    "fiyat": 17.1
+  },
+  {
+    "kalite": "K/S/S/S/K",
+    "fiyat": 19.76
+  },
+  {
+    "kalite": "K/S/S/S/MK",
+    "fiyat": 17.97
+  },
+  {
+    "kalite": "MK/S/S/S/T",
+    "fiyat": 15.28
+  },
+  {
+    "kalite": "MK/S/S/S/MK",
+    "fiyat": 16.17
+  },
+  {
+    "kalite": "B/S/S/SMK 2S*125 GR",
+    "fiyat": 21.56
+  },
+  {
+    "kalite": "K/S/S/S/MK 2S*125 GR",
+    "fiyat": 21.56
+  },
+  {
+    "kalite": "K/S/S/S/MK 2S*135 GR",
+    "fiyat": 22.46
+  },
+  {
+    "kalite": "K/S/S/S/K 140 GR",
+    "fiyat": 25.16
+  },
+  {
+    "kalite": "MK/S/S/S/T 2S*125 GR",
+    "fiyat": 18.42
+  },
+  {
+    "kalite": "MK/S/S/S/T 2S*135 GR",
+    "fiyat": 19.31
+  },
+  {
+    "kalite": "MK/S/S/S/MK 2S*125 GR",
+    "fiyat": 19.31
+  },
+  {
+    "kalite": "MK/S/S/S/MK 2S*135 GR",
+    "fiyat": 20.22
+  },
+  {
+    "kalite": "MK/S/S/S/MK 140 GR",
+    "fiyat": 22.46
+  }
+]`);
+
+    const kaliteSelect = document.getElementById('kalite');
+    kaliteListesi.forEach(k => {
+      let opt = document.createElement("option");
+      opt.value = k.fiyat;
+      opt.textContent = `${k.kalite} → ${k.fiyat} TL/m²`;
+      kaliteSelect.appendChild(opt);
+    });
+
+    function hesapla() {
+      const x = parseFloat(document.getElementById('x').value);
+      const y = parseFloat(document.getElementById('y').value);
+      const z = parseFloat(document.getElementById('z').value);
+      const fiyat = parseFloat(document.getElementById('kalite').value);
+      const karYuzdesi = parseFloat(document.getElementById('kar').value);
+
+      if (isNaN(x) || isNaN(y) || isNaN(z) || isNaN(fiyat) || isNaN(karYuzdesi)) {
+        alert("Lütfen tüm alanları doğru şekilde doldurun.");
+        return;
+      }
+
+      const a = (x + y) * 2 + 0.04;
+      const metrekare = (y + z) * a;
+      const tutar = metrekare * fiyat;
+      const karliTutar = tutar * (1 + karYuzdesi / 100);
+
+      const resultDiv = document.getElementById('sonuc');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = `
+        <b>Hesaplanan Alan:</b> ${metrekare.toFixed(3)} m²<br>
+        <b>m² Fiyat:</b> ${fiyat.toFixed(2)} TL<br>
+        <b>Tutar (Karsız):</b> ${tutar.toFixed(2)} TL<br>
+        <b>Kâr Dahil Tutar:</b> <b>${karliTutar.toFixed(2)} TL</b>
+      `;
+    }
+  </script>
+</body>
+</html>
